@@ -1,0 +1,74 @@
+函数重载：
+相同的作用域、相同名称、参数列表不同的函数——要求：参数列表必须不同（类型／个数／次序）　　与返回值类型是否相同无关
+
+为什么C语言没有函数重载  而C++有：
+因为C++在编译链接阶段有函数名修饰规则 ，可对参数类型不同的同名函数修改为不同名（cout/couts)，c没有所以无法函数重载
+
+修饰规则（不加作用域）：
+void print(int i)                    -->         _Z5printi
+void print(string str)         -->         _Z5printSs
+void print(long l)           -->           _Z5printl
+void print(char str)      -->           _Z5printc
+
+
+再加上作用域后为 
+#include<iostream>
+using namespace std;
+
+class test{
+public:
+        void print(int i)
+        {
+                cout<<"int"<<endl;
+        }
+        void print(char c)
+        {
+                cout<<"char"<<endl;
+        }
+};
+int main()
+{
+        test t;
+        t.print(1);
+        t.print('a');
+        return 0;
+}
+我们现在再来看一下这时print函数映射之后的函数名：
+void print(int i)                    -->            _ZN4test5printEi
+void print(char c)               -->            _ZN4test5printEc
+
+映射机制为：作用域+返回类型+函数名+参数列表
+
+函数重载的调用匹配：
+精确匹配：参数匹配而不做转换，或者只是做微不足道的转换，如数组名到指针、函数名到指向函数的指针、T到const T；
+提升匹配：即整数提升（如bool 到 int、char到int、short 到int），float到double
+使用标准转换匹配：如int 到double、double到int、double到long double、Derived*到Base*、T*到void*、int到unsigned int；
+使用用户自定义匹配；
+使用省略号匹配：类似printf中省略号参数
+如果在最高层有多个匹配函数找到，调用将被拒绝（因为有歧义、模凌两可）。
+例子：
+void print(int);
+void print(const char*);
+void print(double);
+void print(long);
+void print(char);
+
+void h(char c,int i,short s, float f)
+{
+     print(c);//精确匹配，调用print(char)
+     print(i);//精确匹配，调用print(int)
+     print(s);//整数提升，调用print(int)
+     print(f);//float到double的提升，调用print(double)
+
+     print('a');//精确匹配，调用print(char)
+     print(49);//精确匹配，调用print(int)
+     print(0);//精确匹配，调用print(int)
+     print("a");//精确匹配，调用print(const char*)
+}
+意义：避免为同一功能的函数取很多的名字                
+           因构造函数和类名相同，避免了因类型不同实例化对象时的麻烦 
+         操作符重载即是函数重载，丰富了操作符的功能
+
+注意：无参的函数和同名的全缺省函数不要同时存在，会造成二义性
+例： int add();   int add(int a=10);
+C语言中，编译器对函数名字的修饰规则，仅在函数名字前加下划线
