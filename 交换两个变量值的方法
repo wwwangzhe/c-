@@ -1,0 +1,41 @@
+#define _CRT_SECURE_NO_WARNINGS 1
+#include<stdio.h>
+#include<windows.h>
+
+
+void swap1(int*a,int*b) {
+	int c = *a;
+	*a = *b;
+	*b = c;
+}
+void swap2(int &a,int &b) {
+	int c = a;
+	a = b;
+	b = c;
+}
+int main()
+{
+	int a = 0;
+	int b = 0;
+	printf("请输入需要交换的值：");
+	scanf("%d %d", &a, &b);
+	     //不用函数交换  三种方法
+		//int c = a;
+		//a = b;
+		//b = c;
+		//
+		//a = a ^ b;//异或交换
+		//b = a ^ b;
+		//a = a ^ b;
+
+/*a = a + b;
+	b = a - b;
+	a = a - b;*/
+
+	//swap1(&a,&b); 使用函数两种方法
+	swap2(a, b);
+	printf("%d %d\n", a, b);
+	system("pause");
+	return 0;
+
+}
