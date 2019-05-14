@@ -1,0 +1,301 @@
+#pragma once
+
+#include <iostream>
+#include <assert.h>
+using std::cout;
+using std::endl;
+
+class Date
+{
+public:
+	inline int GetMonthDay(int year, int month) const
+	{
+		static int monthArray[13] = { 0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+		if ((month == 2) 
+			&& ((year % 4 == 0 && year % 100 != 0)|| (year % 400 == 0)))
+		{
+			return 29;
+		}
+
+		return monthArray[month];
+	}
+
+	Date(int year, int month, int day)
+	{
+		if (year >= 1900
+			&& month > 0 && month < 13
+			&& day > 0 && day <= GetMonthDay(year, month))
+		{
+			_year = year;
+			_month = month;
+			_day = day;
+		}
+		else
+		{
+			//assert(false);
+			cout << "非法日期" << endl;
+		}
+	}
+
+
+	void Print()
+	{
+		cout << _year << "-" << _month << "-" << _day << endl;
+	}
+
+	bool operator>(const Date& d) const;
+	bool operator>=(const Date& d) const;
+	bool operator<(const Date& d) const;
+	bool operator<=(const Date& d) const;
+	bool operator==(const Date& d) const;
+	bool operator!=(const Date& d) const;
+
+	Date& operator++();		// 前置++
+	Date operator++(int);	// 后置++
+
+	Date operator--();		// 前置--
+	Date operator--(int);	// 后置--
+
+	Date operator+(int day) const;
+	Date operator-(int day) const;
+
+	Date& operator+=(int day);
+	Date& operator-=(int day);
+
+	int operator-(const Date&d);
+private:
+	int _year;
+	int _month;
+	int _day;
+};
+
+
+   // 上面.h
+——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+   //下面.cpp
+   #include "Date.h"
+
+bool Date::operator>(const Date& d) const
+{
+	if (_year > d._year)
+	{
+		return true;	
+	}
+	else if (_year == d._year)
+	{
+		if (_month > d._month) {
+			return true;
+		}
+		if (_month == d._month&&_day > d._day) {  
+			return true;
+		}
+		else {
+			return false;
+		}
+		
+	}
+	else {
+		return false;
+	}
+}
+bool Date::operator>=(const Date& d) const {
+	if (*this > d||
+		*this==d) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+bool Date::operator<(const Date& d) const {
+	if (d >= *this) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+bool Date::operator<=(const Date& d) const {
+	if (d > *this) {
+		return true;
+	}
+	else {
+		return true;
+	}
+}
+bool Date::operator==(const Date& d) const {
+	if (_year == d._year&&_month == d._month&&_day == d._month) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+bool Date::operator!=(const Date& d) const {
+	if (*this == d) {
+		return false;
+	}
+	else {
+		return true;
+	}
+}
+
+// ++d
+
+
+Date& Date::operator++()	// 前置++
+{
+	*this += 1;
+	return *this;
+}
+
+// d++
+Date Date::operator++(int) // 后置++
+{
+	Date ret(*this);
+	*this += 1;
+	return ret;
+}
+
+
+
+Date Date::operator--() {  //前置-- 
+	*this -= 1;
+	return *this;
+}		// 前置--
+
+Date Date::operator--(int){//后置--   
+	Date ret(*this);
+	*this -= 1;
+	return ret;
+}
+Date Date::operator+(int day) const
+{
+	Date ret = *this;
+	ret += day;
+	return ret;
+}
+
+Date& Date::operator+=(int day) 
+{
+	if (day < 0) {  // +(-2000)   -2000
+		*this -= -day;
+		return *this;
+	}
+	/*if (day < 0) {
+	_day=_day
+	}*/
+
+	_day += day;
+	while (_day > GetMonthDay(_year, _month))
+	{
+		_day -= GetMonthDay(_year, _month);
+		_month++;
+		if (_month == 13)
+		{
+			++_year;
+			_month = 1;
+		}
+	}
+
+	return *this;
+}
+
+Date Date::operator-(int day) const {
+	Date ret = *this;
+	ret -= day;
+	return ret;
+
+
+}
+Date& Date::operator-=(int day) {
+	if (day < 0) {
+		return (*this += -day);
+
+	}
+	_day += -day;
+	while (_day <= 0) {
+		_month--;
+		_day += GetMonthDay(_year, _month);
+		if (_month == 0) {
+			_year--;
+			_month = 13;
+		}
+	}
+
+	return *this;
+
+}
+
+int Date::operator-(const Date&d) 
+{
+	int day1 = 0;
+	int day2 = 0;
+	int day;
+	Date ret(1900,1, 1);
+	Date ret1(*this);     //2019  5    12          //12+30=42 41
+	Date ret2(d);         // 2019  5   1          //1+30  31  30
+	while (ret1._year != ret._year||ret1._month!=ret._month) {
+		ret1._month--;
+		
+		if (ret1._month == 0) {
+			ret1._month =12;
+			ret1._year--;
+		}
+		//for (int day3 = GetMonthDay(ret1._year, ret1._month); day3 > 0; day3--) {  
+		//	day1++;
+		//	//printf("%d %d %d\n", ret1._year, ret1._month, ret1._day);
+		//
+		//}
+		day1 += GetMonthDay(ret1._year, ret1._month);
+		
+		
+	}
+	day1 += ret1._day-1;
+	while (ret2._year != ret._year||ret2._month != ret._month) {
+		ret2._month--;
+		
+		if (ret2._month == 0) {
+			ret2._month =12;
+			ret2._year--;
+		}
+		//for (int day3 = GetMonthDay(ret2._year, ret2._month); day3 > 0; day3--) {
+		//	day2++;
+		//	//printf("%d %d %d\n", ret2._year, ret2._month, ret2._day);
+		//}
+		day2 += GetMonthDay(ret2._year, ret2._month);
+
+
+
+	}
+	day2 += ret2._day-1;
+	day = day1 - day2 ;
+	if (day < 0) {
+		return -day;
+	}
+	else {
+		return day;
+	}
+	
+	
+
+
+
+}
+
+int  main() {
+	Date A(2019, 5, 12);
+
+	Date B(2019, 5, 12);
+	if (B <=A) {
+		printf("1\n");
+	}
+	A +=-2000;
+	
+	A.Print();
+	B.Print();
+	int c = A - B;
+	printf("%d\n", c);
+	getchar();
+	return 0;
+}
