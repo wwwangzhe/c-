@@ -7,7 +7,7 @@
 修饰规则（不加作用域）：
 void print(int i)        -->       _Z5printi  （Z5 对应返回类型  print对应函数名   i为参数列表）
 void print(string str)     -->         _Z5printSs
-void print(long l)           -->           _Z5printl
+void print(long l)           -->          _Z5printl
 void print(char str)      -->           _Z5printc
   
 此时的修饰规则为 ：返回类型+函数名+参数列表
