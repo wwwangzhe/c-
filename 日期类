@@ -50,7 +50,7 @@ public:
 	bool operator==(const Date& d) const;
 	bool operator!=(const Date& d) const;
 
-	Date& operator++();		// 前置++
+	Date& operator++();     // 前置++
 	Date operator++(int);	// 后置++
 
 	Date operator--();		// 前置--
